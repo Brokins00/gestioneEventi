@@ -50,4 +50,44 @@ public class CentralizedExceptionHandler extends ResponseEntityExceptionHandler 
 
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(EventoNonTrovatoException.class)
+    public ResponseEntity<Object> EventoNonTrovatoHandler(EventoNonTrovatoException e) {
+        Error error = new Error();
+        error.setMessage(e.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        error.setStatoErrore(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EventoPienoException.class)
+    public ResponseEntity<Object> EventoPienoHandler(EventoPienoException e) {
+        Error error = new Error();
+        error.setMessage(e.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        error.setStatoErrore(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EventoPresenteException.class)
+    public ResponseEntity<Object> EventoPresenteHandler(EventoPresenteException e) {
+        Error error = new Error();
+        error.setMessage(e.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        error.setStatoErrore(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PartecipazionePresenteException.class)
+    public ResponseEntity<Object> PartecipazionePresenteHandler(PartecipazionePresenteException e) {
+        Error error = new Error();
+        error.setMessage(e.getMessage());
+        error.setDataErrore(LocalDateTime.now());
+        error.setStatoErrore(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

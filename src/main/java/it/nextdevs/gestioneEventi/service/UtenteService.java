@@ -1,8 +1,11 @@
 package it.nextdevs.gestioneEventi.service;
 
 import it.nextdevs.gestioneEventi.dto.UtenteDto;
-import it.nextdevs.gestioneEventi.exceptions.BadRequestException;
+import it.nextdevs.gestioneEventi.exceptions.*;
+import it.nextdevs.gestioneEventi.model.Evento;
+import it.nextdevs.gestioneEventi.model.Partecipazione;
 import it.nextdevs.gestioneEventi.model.Utente;
+import it.nextdevs.gestioneEventi.repository.PartecipazioneRepository;
 import it.nextdevs.gestioneEventi.repository.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,10 @@ import java.util.Optional;
 public class UtenteService {
     @Autowired
     private UtenteRepository utenteRepository;
+    @Autowired
+    private EventoService eventoService;
+    @Autowired
+    private PartecipazioneRepository partecipazioneRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -47,6 +54,33 @@ public class UtenteService {
             return "Utente con id "+utente.getId()+" creato con successo";
         } else {
             throw new BadRequestException("L'email dell'utente "+utenteDto.getEmail()+" è già presente");
+        }
+    }
+
+    public Partecipazione partecipaEvento(Integer idEvento, Integer idUtente) {
+        Optional<Utente> utenteOptional = getUtenteById(idUtente);
+        if (utenteOptional.isPresent()) {
+            Optional<Evento> eventoOptional = eventoService.getEventoById(idEvento);
+            if (eventoOptional.isPresent()) {
+                Evento evento = eventoOptional.get();
+                if (evento.getPartecipazioni().size() < evento.getNumPostiDisponibili()) {
+                    Optional<Partecipazione> partecipazioneOptional = partecipazioneRepository.findByUtenteAndEvento(utenteOptional.get(), evento);
+                    if (partecipazioneOptional.isPresent()) {
+                        throw new PartecipazionePresenteException("Stai già partecipando a questo evento");
+                    } else {
+                        Partecipazione partecipazione = new Partecipazione();
+                        partecipazione.setUtente(utenteOptional.get());
+                        partecipazione.setEvento(evento);
+                        return partecipazioneRepository.save(partecipazione);
+                    }
+                } else {
+                    throw new EventoPienoException("Non ci sono posti disponibili per questo evento");
+                }
+            } else {
+                throw new EventoNonTrovatoException("Evento con id "+idEvento+" non trovato");
+            }
+        } else {
+            throw new UtenteNonTrovatoException("Utente con id "+idUtente+" non trovato");
         }
     }
 }

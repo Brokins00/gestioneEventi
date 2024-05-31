@@ -1,5 +1,6 @@
 package it.nextdevs.gestioneEventi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.nextdevs.gestioneEventi.enums.RuoloUtente;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -23,6 +24,9 @@ public class Utente implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private RuoloUtente ruoloUtente;
+    @OneToMany(mappedBy = "utente")
+    @JsonIgnore
+    private List<Partecipazione> partecipazioni;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

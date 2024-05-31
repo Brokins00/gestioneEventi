@@ -1,12 +1,11 @@
 package it.nextdevs.gestioneEventi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -20,4 +19,7 @@ public class Evento {
     private LocalDate data;
     private String luogo;
     private Integer numPostiDisponibili;
+    @OneToMany(mappedBy = "evento")
+    @JsonIgnore
+    private List<Partecipazione> partecipazioni;
 }
